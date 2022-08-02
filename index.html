@@ -75,14 +75,29 @@
     if (row.party_identification == "Republican (REP)"){
       var circle = L.circle([row.latitude, row.longitude], {
         stroke: true,
-        weight: .5,
-        opacity: 0.16,
-        fillOpacity: 0.16,
+        weight: 1,
+        opacity: 0.02,
+        fillOpacity: 0.02,
         color:  "red",
         fill :  "red",
           })
       circle.addTo(map);
-      circle.setRadius(row.cell_count *3)
+      circle.setRadius(row.cell_count* 10)
+    }
+}
+for (var i in data) {
+      var row = data[i];
+    if (row.party_identification == "Democrat (DEM)"){
+      var circle = L.circle([row.latitude, row.longitude], {
+        stroke: true,
+        weight: 1,
+        opacity: 0.02,
+        fillOpacity: 0.02,
+        color:  "blue",
+        fill :  "blue",
+          })
+      circle.addTo(map);
+      circle.setRadius(row.cell_count *10)
     }
 }
   });
