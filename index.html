@@ -1,9 +1,10 @@
 <html>
 <head>
-<title>"Democrat and Republican Registration in Arizona"</title>
+<title>"Republican and Democratic Registration in Arizona"</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+<link rel="stylesheet" href="app.css">
 
   <!-- Load Leaflet code library - see updates at http://leafletjs.com/download.html -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
@@ -21,6 +22,7 @@
 
 </head>
 <body>
+  <div class = "container"> <p>A</p></div>
 
   <!-- Insert HTML division tag to layout the map -->
   <div id="map" class="vh-100 vw-100 bg-near-white"></div>
@@ -38,7 +40,7 @@
 
   /* Control panel to display map layers */
   var controlLayers = L.control.layers( null, null, {
-    position: "topright",
+    position: "bottomright",
     collapsed: false
   }).addTo(map);
 
@@ -49,18 +51,16 @@
   controlLayers.addBaseLayer(terrain, 'Hybrid basemap');
 
     // display Carto basemap tiles with light features and labels
-  var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-  }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
+  var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {}).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
   controlLayers.addBaseLayer(dark, 'Dark basemap');
 
 
    // display Carto basemap tiles with light features and labels
    var light = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-  }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
+   }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
   controlLayers.addBaseLayer(light, 'Light basemap');
 
+  
   
   // Read markers data from data.csv
   $.get('data.csv', function(csvString) {
@@ -73,35 +73,44 @@
     for (var i in data) {
       var row = data[i];
     if (row.party_identification == "Republican (REP)"){
-      var circle = L.circle([row.latitude, row.longitude], {
-        stroke: true,
-        weight: 1,
-        opacity: 0.02,
-        fillOpacity: 0.02,
-        color:  "red",
-        fill :  "red",
+      var circle = L.circleMarker([row.latitude, row.longitude], {
+        radius: row.cell_count/100,
+        fillOpacity: 0.06,
+        opacity: 0.05,
+        fillColor: "red"
           })
       circle.addTo(map);
-      circle.setRadius(row.cell_count* 10)
     }
 }
 for (var i in data) {
       var row = data[i];
     if (row.party_identification == "Democrat (DEM)"){
-      var circle = L.circle([row.latitude, row.longitude], {
-        stroke: true,
-        weight: 1,
-        opacity: 0.02,
-        fillOpacity: 0.02,
-        color:  "blue",
-        fill :  "blue",
+      var circle = L.circleMarker([row.latitude, row.longitude], {
+        className: 'pulse',
+        radius: row.cell_count/100,
+        fillOpacity: 0.06,
+        opacity: 0.05,
+        fillColor: "blue"
           })
       circle.addTo(map);
-      circle.setRadius(row.cell_count *10)
-    }
-}
-  });
+  }}
+});
 
+
+L.Control.textbox = L.Control.extend({
+		onAdd: function(map) {
+			
+		var text = L.DomUtil.create('div');
+		text.id = "info_text";
+		text.innerHTML = "<p>AVID Data: Republican and Democratic registration,<br>by census tract.</br><small>Note: Circle size weighted by tract totals <br>2020 Release</br></small></p>"
+		return text;  },
+
+		onRemove: function(map) {
+			// Nothing to do here
+		}
+	});
+	L.control.textbox = function(opts) { return new L.Control.textbox(opts);}
+	L.control.textbox({ position: 'bottomleft' }).addTo(map);
 </script>
 
 </body>
